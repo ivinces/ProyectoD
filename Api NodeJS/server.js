@@ -8,15 +8,16 @@ const client = new Client({
     user: "agricultor",
     password: "appagricultor",
     host: "localhost",
-    port: "5433",
+    port: "5432",
     database: "SensoresDB"
 })
 
 
 //inicio Cultivo
 app.get("/cultivo", async (req,res) => {
-    const rows = await readRegister("SELECT * FROM Cultivo");
+    const rows = await readRegister("SELECT * FROM cultivo;");
     res.setHeader("Content-Type", "application/json");
+    console.log(rows);
     res.send(JSON.stringify(rows));
 })
 app.post("/cultivo", async (req,res) => {
@@ -445,6 +446,7 @@ async function readRegister(query){
         return results.rows;
     }
     catch(e){
+        console.log(e);
         return [];
     }
 }

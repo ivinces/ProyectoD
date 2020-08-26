@@ -1,6 +1,13 @@
 const  {Client} = require('pg')
 const express = require("express");
 const { query } = require('express');
+const config = require('config');
+
+if(!config.get('NODE_PORT')){
+    console.error('FATAL ERROR: init port is not defined');
+    process.exit(1);
+}
+
 const app = express();
 app.use(express.json())
 

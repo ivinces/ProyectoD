@@ -1,0 +1,33 @@
+version: '2'
+
+services:
+
+        psql:
+                build: 
+                        context: ./Postgres
+                        dockerfile: Dockerfile.postgres
+                image: custom_postgres
+                ports: 
+                        - "5432:5432"
+        nodeserver1:
+                build: 
+                       context: ./
+                       dockerfile: Dockerfile
+                image: nodeserver
+                depends_on: 
+                        - psql
+                ports:
+                        - "3004:3004"
+                environment:
+                        - NODE_PORT=3004
+        nodeserver2:
+                image: nodeserver
+                depends_on: 
+                        - psql
+                ports:
+                        - "3005:3005"
+                environment:
+                        - NODE_PORT=3005
+                    
+
+

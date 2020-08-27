@@ -7,6 +7,8 @@ if(!config.get('NODE_PORT')){
     console.error('FATAL ERROR: init port is not defined');
     process.exit(1);
 }
+const port = config.get('NODE_PORT');
+
 
 const app = express();
 app.use(express.json())
@@ -14,7 +16,7 @@ app.use(express.json())
 const client = new Client({
     user: "agricultor",
     password: "appagricultor",
-    host: "localhost",
+    host: "psql",
     port: "5432",
     database: "SensoresDB"
 })
@@ -22,6 +24,7 @@ const client = new Client({
 
 //inicio Cultivo
 app.get("/cultivo", async (req,res) => {
+    console.log("ENTRE!!!");
     const rows = await readRegister("SELECT * FROM cultivo;");
     res.setHeader("Content-Type", "application/json");
     console.log(rows);
@@ -427,7 +430,7 @@ app.put("/registro_radiacion", async (req,res) => {
 //fin registro_radiacion
 
 
-app.listen(8085, () => console.log("Web server is listening... on port 8085"))
+app.listen(port, () => console.log("Web server is listening... on port " + port));
 
 
 start()
@@ -439,12 +442,22 @@ async function start(){
 
 //funciones de la base
 async function connect() {
-    try{
-        await client.connect();
+    let retries= 5;
+    while(retries){
+        try{
+            await client.connect();
+            break;
+        }
+        catch(e){
+            console.log("Failed to connect "+e)
+            retries -= 1;
+            console.log(`retries left: ${retries}`);
+            //wait 5 seconds
+            await new Promise(res => setTimeout(res,5000));
+        }
+
     }
-    catch(e){
-        console.log("Failed to connect "+e)
-    }
+    
 }
 
 async function readRegister(query){
